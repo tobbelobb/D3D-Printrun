@@ -24,7 +24,7 @@ except:
 from printrun.utils import install_locale
 install_locale('pronterface')
 
-from .controls import ControlsSizer, add_extra_controls
+from .controls import ControlsSizer, add_extra_controls, QCControlsSizer
 from .viz import VizPane
 from .log import LogPane
 from .toolbar import MainToolbar
@@ -133,6 +133,31 @@ class MainWindow(wx.Frame):
         panel.SetBackgroundColour(self.bgcolor)
         if add_to_list: self.panels.append(panel)
 
+    def createQCGui(self):
+        self.outermost_vbox = wx.BoxSizer(wx.VERTICAL)
+        self.panel.SetSizer(self.outermost_vbox) # Outermost structure is a stack
+
+        # Create the toolbar (port menu, connect button). Don't register it
+        upperpanel = self.newPanel(self.panel)
+        self.toolbarsizer = MainToolbar(self, upperpanel, reduced = True)
+        upperpanel.SetSizer(self.toolbarsizer)
+        self.outermost_vbox.Add(upperpanel, 0, wx.EXPAND) # Place toolbar on top of outermost stack
+
+        # Split the lower part of outermost_vbox in two
+        outermost_hbox = wx.BoxSizer(wx.HORIZONTAL)
+        self.outermost_vbox.Add(outermost_hbox, 1, wx.EXPAND)
+
+        # Create the lower box with buttons and serial
+        controls_sizer = QCControlsSizer(self) # Controls sizer holds all buttons
+        outermost_hbox.Add(controls_sizer, 2, wx.EXPAND)
+
+        # Create the log
+        log_pane = LogPane(self)
+        outermost_hbox.Add(log_pane, 1, wx.EXPAND)
+
+        # Make sure we exit correctly
+        self.Bind(wx.EVT_CLOSE, self.kill)
+
     def createTabbedGui(self):
         self.notesizer = wx.BoxSizer(wx.VERTICAL)
         self.notebook = wx.Notebook(self.panel)
@@ -218,19 +243,25 @@ class MainWindow(wx.Frame):
         self.SetMinSize(self.ClientToWindowSize(minsize))  # client to window
         self.Fit()
 
+    ## Panels        |
+    # upperpanel     |
+    # lowerpanel     |
+    # leftpanel      |
+    # controls_panel |
+
     def createGui(self, compact = False, mini = False):
         self.mainsizer = wx.BoxSizer(wx.VERTICAL)
-        self.lowersizer = wx.BoxSizer(wx.HORIZONTAL)
-        upperpanel = self.newPanel(self.panel, False)
+        upperpanel = self.newPanel(self.panel, False) # upperpanel holds Connect button and such
         self.toolbarsizer = MainToolbar(self, upperpanel)
-        lowerpanel = self.newPanel(self.panel)
+        self.lowersizer = wx.BoxSizer(wx.HORIZONTAL)
+        lowerpanel = self.newPanel(self.panel) # lowerpanel unaffected by color change
         upperpanel.SetSizer(self.toolbarsizer)
         lowerpanel.SetSizer(self.lowersizer)
-        leftpanel = self.newPanel(lowerpanel)
+        leftpanel = self.newPanel(lowerpanel) # leftpanel holds arrow to fold away all controllers left of plater
         left_pane = LeftPaneToggleable(self, leftpanel, [self.lowersizer])
         leftpanel.SetSizer(left_pane)
         left_real_panel = left_pane.panepanel
-        controls_panel = self.newPanel(left_real_panel)
+        controls_panel = self.newPanel(left_real_panel) # Controls panel holds all controls. The complete left side of Pronterface window
         controls_sizer = ControlsSizer(self, controls_panel, mini_mode = mini)
         controls_panel.SetSizer(controls_sizer)
         left_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -246,7 +277,7 @@ class MainWindow(wx.Frame):
             self.splitterwindow.SetSashGravity(0.8)
             rightsizer.Add(self.splitterwindow, 1, wx.EXPAND)
             vizpanel = self.newPanel(self.splitterwindow)
-            logpanel = self.newPanel(self.splitterwindow)
+            logpanel = self.newPanel(self.splitterwindow) # Logpanel holds fold button for the log
             self.splitterwindow.SplitVertically(vizpanel, logpanel,
                                                 self.settings.last_sash_position)
             self.splitterwindow.shrinked = False
@@ -294,16 +325,28 @@ class MainWindow(wx.Frame):
         self.cbuttons_reload()
 
     def gui_set_connected(self):
-        self.xyb.enable()
-        self.zb.enable()
-        for control in self.printerControls:
-            control.Enable()
+        if self.settings.uimode == "QC": # Adress each button individually
+            self.moveright.Enable()
+            self.moveright_works.Enable()
+            self.moveforward.Enable()
+            self.moveforward_works.Enable()
+        else:
+            self.xyb.enable()
+            self.zb.enable()
+            for control in self.printerControls:
+                control.Enable()
 
     def gui_set_disconnected(self):
-        self.printbtn.Disable()
-        self.pausebtn.Disable()
-        self.recoverbtn.Disable()
-        for control in self.printerControls:
-            control.Disable()
-        self.xyb.disable()
-        self.zb.disable()
+        if self.settings.uimode == "QC":
+            self.moveright.Disable()
+            self.moveright_works.Disable()
+            self.moveforward.Disable()
+            self.moveforward_works.Disable()
+        else:
+            self.printbtn.Disable()
+            self.pausebtn.Disable()
+            self.recoverbtn.Disable()
+            self.xyb.disable()
+            self.zb.disable()
+            for control in self.printerControls:
+                control.Disable()

@@ -15,6 +15,20 @@
 
 import wx
 
+#class Enableablebutton(wx.Button):
+#    def __init__(self, *args, **kwargs):
+#        super(Enableablebutton, self).__init__(*args, **kwargs)
+#        self.enabled = False
+#
+#    def disable(self):
+#        self.enabled = False
+#        self.Disable()
+#
+#    def enable(self):
+#        self.enabled = True
+#        self.Enable()
+
+
 def make_button(parent, label, callback, tooltip, container = None, size = wx.DefaultSize, style = 0):
     button = wx.Button(parent, -1, label, style = style, size = size)
     button.Bind(wx.EVT_BUTTON, callback)

@@ -226,7 +226,7 @@ class PronterWindow(MainWindow, pronsole.pronsole):
         self.slicing = False
         self.loading_gcode = False
         self.loading_gcode_message = ""
-        self.mini = False
+        self.mini = True
         self.p.sendcb = self.sentcb
         self.p.preprintsendcb = self.preprintsendcb
         self.p.printsendcb = self.printsentcb
@@ -269,15 +269,17 @@ class PronterWindow(MainWindow, pronsole.pronsole):
                 control.GetContainingSizer().Detach(control)
                 control.Reparent(temppanel)
             self.panel.DestroyChildren()
-            self.gwindow.Destroy()
+            if not self.settings.uimode == "QC": # QC mode has no gwindow
+              self.gwindow.Destroy()
             self.reset_ui()
 
         # Create UI
         if self.settings.uimode in (_("Tabbed"), _("Tabbed with platers")):
             self.createTabbedGui()
+        elif self.settings.uimode == "QC":
+            self.createQCGui()
         else:
-            self.createGui(self.settings.uimode == _("Compact"),
-                           self.settings.controlsmode == "Mini")
+            self.createGui(self.settings.uimode == _("Compact"), self.settings.controlsmode == "Mini")
 
         if hasattr(self, "splitterwindow"):
             self.splitterwindow.SetSashPosition(self.settings.last_sash_position)
@@ -345,7 +347,8 @@ class PronterWindow(MainWindow, pronsole.pronsole):
             self.save_in_rc("set last_extrusion", "set last_extrusion %d" % self.settings.last_extrusion)
         if self.excluder:
             self.excluder.close_window()
-        wx.CallAfter(self.gwindow.Destroy)
+        if not self.settings.uimode == "QC": # QC mode has no gwindow
+          wx.CallAfter(self.gwindow.Destroy)
         wx.CallAfter(self.Destroy)
 
     def _get_bgcolor(self):
@@ -481,6 +484,10 @@ class PronterWindow(MainWindow, pronsole.pronsole):
     def rescanports(self, event = None):
         scanned = self.scanserial()
         portslist = list(scanned)
+        if len(scanned) == 0:
+            self.log("Ports scanned. Found no ports. USB cable disconnected?")
+        else:
+            self.log(_("Ports scanned. Found ports\n%s" % '\n'.join(scanned)))
         if self.settings.port != "" and self.settings.port not in portslist:
             portslist.append(self.settings.port)
             self.serialport.Clear()
@@ -833,7 +840,7 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         self.settings._add(SpinSetting("extruders", 0, 1, 5, _("Extruders count"), _("Number of extruders"), "Printer"))
         self.settings._add(BooleanSetting("clamp_jogging", False, _("Clamp manual moves"), _("Prevent manual moves from leaving the specified build dimensions"), "Printer"))
         self.settings._add(ComboSetting("uimode", _("Standard"), [_("Standard"), _("Compact"), _("Tabbed"), _("Tabbed with platers")], _("Interface mode"), _("Standard interface is a one-page, three columns layout with controls/visualization/log\nCompact mode is a one-page, two columns layout with controls + log/visualization\nTabbed mode is a two-pages mode, where the first page shows controls and the second one shows visualization and log.\nTabbed with platers mode is the same as Tabbed, but with two extra pages for the STL and G-Code platers."), "UI"), self.reload_ui)
-        self.settings._add(ComboSetting("controlsmode", "Standard", ["Standard", "Mini"], _("Controls mode"), _("Standard controls include all controls needed for printer setup and calibration, while Mini controls are limited to the ones needed for daily printing"), "UI"), self.reload_ui)
+        self.settings._add(ComboSetting("controlsmode", "Standard", ["Standard", "Mini", "QC"], _("Controls mode"), _("Standard controls include all controls needed for printer setup and calibration, while Mini controls are limited to the ones needed for daily printing. QC is quality control steps intended for testing a newly assembled printers basic functionality."), "UI"), self.reload_ui)
         self.settings._add(BooleanSetting("slic3rintegration", False, _("Enable Slic3r integration"), _("Add a menu to select Slic3r profiles directly from Pronterface"), "UI"), self.reload_ui)
         self.settings._add(BooleanSetting("slic3rupdate", False, _("Update Slic3r default presets"), _("When selecting a profile in Slic3r integration menu, also save it as the default Slic3r preset"), "UI"))
         self.settings._add(ComboSetting("mainviz", "3D", ["2D", "3D", "None"], _("Main visualization"), _("Select visualization for main window."), "Viewer"), self.reload_ui)
@@ -994,7 +1001,8 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         elif self.loading_gcode:
             status_string = self.loading_gcode_message
         wx.CallAfter(self.statusbar.SetStatusText, status_string)
-        wx.CallAfter(self.gviz.Refresh)
+        if not self.settings.uimode == "QC":
+            wx.CallAfter(self.gviz.Refresh)
         # Call pronsole's statuschecker inner loop function to handle
         # temperature monitoring and status loop sleep
         pronsole.pronsole.statuschecker_inner(self, self.settings.monitor)
@@ -1031,7 +1039,6 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
     #  --------------------------------------------------------------
 
     def connect(self, event = None):
-        self.log(_("Connecting..."))
         port = None
         if self.serialport.GetValue():
             port = str(self.serialport.GetValue())
@@ -1054,7 +1061,16 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
             self.paused = 0
             if self.sdprinting:
                 self.p.send_now("M26 S0")
-        if not self.connect_to_printer(port, baud, self.settings.dtr):
+        self.log(_("Trying to connect to port %s at baud %s...") % (port, baud))
+        if self.settings.uimode == "QC":
+            connectval = self.connect_to_printer(port, baud, self.settings.dtr,err_message_softness=True)
+        else:
+            connectval = self.connect_to_printer(port, baud, self.settings.dtr)
+        if connectval == 2:
+            self.log("Rescanning ports...")
+            self.rescanports()
+            return
+        elif not connectval:
             return
         if port != self.settings.port:
             self.set("port", port)
@@ -1622,7 +1638,7 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
 
     def printsentcb(self, gline):
         """Callback when a print gcode has been sent"""
-        if gline.is_move:
+        if not self.settings.uimode == "QC" and gline.is_move:
             if hasattr(self.gwindow, "set_current_gline"):
                 wx.CallAfter(self.gwindow.set_current_gline, gline)
             if hasattr(self.gviz, "set_current_gline"):

@@ -145,7 +145,7 @@ class printcore():
         self.printing = False
 
     @locked
-    def connect(self, port = None, baud = None, dtr=None):
+    def connect(self, port = None, baud = None, dtr=None, err_message_softness=False):
         """Set port and baudrate if given, then connect to printer
         """
         if self.printer:
@@ -205,14 +205,16 @@ class printcore():
                         pass
                     self.printer.open()
                 except SerialException as e:
-                    self.logError(_("Could not connect to %s at baudrate %s:") % (self.port, self.baud) +
-                                  "\n" + _("Serial error: %s") % e)
                     self.printer = None
-                    return
+                    #print(e)
+                    raise
+                    return e.errno
                 except IOError as e:
-                    self.logError(_("Could not connect to %s at baudrate %s:") % (self.port, self.baud) +
-                                  "\n" + _("IO error: %s") % e)
+                    if not err_message_softness:
+                        self.logError(_("Could not connect to %s at baudrate %s:") % (self.port, self.baud) +
+                                        "\n" + _("IO error: %s") % e)
                     self.printer = None
+                    raise
                     return
             self.stop_read_thread = False
             self.read_thread = threading.Thread(target = self._listen)
