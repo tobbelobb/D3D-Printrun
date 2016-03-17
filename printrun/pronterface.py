@@ -270,7 +270,7 @@ class PronterWindow(MainWindow, pronsole.pronsole):
                 control.GetContainingSizer().Detach(control)
                 control.Reparent(temppanel)
             self.panel.DestroyChildren()
-            if not self.settings.uimode == "QC": # QC mode has no gwindow
+            if hasattr(self, "gwindow") and self.gwindow: # QC mode has no gwindow
               self.gwindow.Destroy()
             self.reset_ui()
 
@@ -282,7 +282,7 @@ class PronterWindow(MainWindow, pronsole.pronsole):
         else:
             self.createGui(self.settings.uimode == _("Compact"), self.settings.controlsmode == "Mini")
 
-        if hasattr(self, "splitterwindow"):
+        if hasattr(self, "splitterwindow") and not self.settings.uimode == "QC": # QC doesn't have splitterwindow
             self.splitterwindow.SetSashPosition(self.settings.last_sash_position)
 
             def splitter_resize(event):
@@ -349,7 +349,7 @@ class PronterWindow(MainWindow, pronsole.pronsole):
         if self.excluder:
             self.excluder.close_window()
         if not self.settings.uimode == "QC": # QC mode has no gwindow
-          wx.CallAfter(self.gwindow.Destroy)
+            wx.CallAfter(self.gwindow.Destroy)
         wx.CallAfter(self.Destroy)
 
     def _get_bgcolor(self):
@@ -973,10 +973,10 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
             self.start_viz_thread()
 
     def update_monitor(self, *args):
-        if hasattr(self, "graph") and self.display_graph:
-            if self.settings.monitor:
+        if hasattr(self, "graph") and self.display_graph: # QC mode doesn't have graph
+            if self.settings.monitor and not self.settings.uimode == "QC":
                 wx.CallAfter(self.graph.StartPlotting, 1000)
-            else:
+            elif not self.settings.uimode == "QC":
                 wx.CallAfter(self.graph.StopPlotting)
 
     #  --------------------------------------------------------------
