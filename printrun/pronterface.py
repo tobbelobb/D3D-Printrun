@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 
 # This file is part of the Printrun suite.
 #
@@ -826,6 +827,7 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         info.SetLicence(licence)
         info.AddDeveloper('Kliment Yanev')
         info.AddDeveloper('Guillaume Seguin')
+        info.AddDeveloper('Torbjørn Ludvigsen')
 
         wx.AboutBox(info)
 
