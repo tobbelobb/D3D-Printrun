@@ -159,6 +159,8 @@ class PronterOptionsDialog(wx.Dialog):
                     font = label.GetFont()
                     font.SetWeight(wx.BOLD)
                     label.SetFont(font)
+                if setting.name == "controlsmode" and pronterface.settings.uimode == "QC":
+                    widget.Disable()
                 grid.Add(label, pos = (current_row, 0),
                          flag = wx.ALIGN_CENTER_VERTICAL | wx.ALIGN_RIGHT)
                 grid.Add(widget, pos = (current_row, 1),
