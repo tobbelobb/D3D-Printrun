@@ -22,6 +22,9 @@ from .widgets import TempGauge
 from wx.lib.agw.floatspin import FloatSpin
 
 from .utils import make_button, make_custom_button
+try: import simplejson as json
+except ImportError: import json
+
 
 class XYZControlsSizer(wx.GridBagSizer):
 
@@ -466,10 +469,15 @@ class QCControlsSizer(wx.BoxSizer):
         self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 15: check if extruder works")) #
 
         root.done = wx.Button(parentpanel, label = "Victory! Open Pronterface to print a cube!")
-        root.done.Hide() # Disabled by default. Only enabled when all checkboxes are checked
+        root.done.Bind(wx.EVT_BUTTON, lambda event: self.ondoneclick(event, root))
+        root.done.Disable() # Disabled by default. Only enabled when all checkboxes are checked
         self.Add(root.done, 1, flag=wx.EXPAND)
 
-
+    def ondoneclick(self, event, root):
+        root.settings.uimode = "Standard"
+        root.reload_ui()
+        recent_files = json.loads(root.settings.recentfiles)
+        root.loadfile(event, recent_files[0]) # Try to load recent file
 
 class ControlsSizer(wx.GridBagSizer):
 
