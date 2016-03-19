@@ -350,74 +350,38 @@ class QCControlsSizer(wx.BoxSizer):
     def __init__(self, root, parentpanel = None, standalone_mode = False):
         super(QCControlsSizer, self).__init__(wx.VERTICAL)
         if not parentpanel: parentpanel = root.panel
-        # First button row height set manually
-        rowspace = 12
-        self.Add((-1, rowspace))
-        rowspace = 8
+        fgsizer = wx.FlexGridSizer(rows = 13, cols = 4, vgap = 5, hgap = 5)
+
+        self.Add((-1, 12))
         # Step 1
-        step1box = wx.BoxSizer(wx.HORIZONTAL)
-        step1box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 1: "), 0, wx.ALIGN_CENTER)  # G1 X10 F600
-        root.moveright = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")
-        step1box.Add(root.moveright, 0, wx.ALIGN_CENTER)
+        root.moveright = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")  # G1 X10 F600
         root.moveright_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step1box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
-        # Helpbutton stuff
         root.step1helpbutton = wx.Button(parentpanel, label="Step 1 help")
         root.step1helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                                       "Should show X-carriage moving 10 mm to the right.",
                                       "Step 1 Help",
                                       style=wx.OK).ShowModal())
-        step1box.Add(root.step1helpbutton, 0, wx.ALIGN_CENTER)
-        # End of helpbutton stuff
-        step1box.Add(root.moveright_works, 0, wx.ALIGN_CENTER)
-        self.Add(step1box, 0, wx.EXPAND)
         # Save button size and use for rest of buttons
         buttonwidth = root.moveright.Size[0]
         buttonheight = root.moveright.Size[1]
         # Step 2
-        self.Add((-1, rowspace))
-        step2box = wx.BoxSizer(wx.HORIZONTAL)
-        step2box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 2: "), 0, wx.ALIGN_CENTER)  # G1 Y10 F600
-        root.moveforward = wx.Button(parentpanel, label = "Move 10 mm away from origo along Y-axis")
-        step2box.Add(root.moveforward, 0, wx.ALIGN_CENTER)
+        root.moveforward = wx.Button(parentpanel, label = "Move 10 mm away from origo along Y-axis")  # G1 Y10 F600
         root.moveforward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step2box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
-        # Helpbutton stuff
         root.step2helpbutton = wx.Button(parentpanel, label="Step 2 help")
         root.step2helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                                       "Should show video where printer moves its bed 10 mm forwards.",
                                       "Step 2 Help",
                                       style=wx.OK).ShowModal())
-        step2box.Add(root.step2helpbutton, 0, wx.ALIGN_CENTER)
-        # End of helpbutton stuff
-        step2box.Add(root.moveforward_works, 0, wx.ALIGN_CENTER)
-        self.Add(step2box, 0, wx.EXPAND)
         # Step 3
-        self.Add((-1, rowspace))
-        step3box = wx.BoxSizer(wx.HORIZONTAL)
-        step3box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 3: "), 0, wx.ALIGN_CENTER)  # G1 Z10 F200
-        root.moveupward = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth, -1))
-        step3box.Add(root.moveupward, 0, wx.ALIGN_CENTER)
-        step3box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
-        # Helpbutton stuff
+        root.moveupward = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth, -1))  # G1 Z1 F200
         root.step3helpbutton = wx.Button(parentpanel, label="Step 3 help")
         root.step3helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                      "This box should contain a little video showing a print head travelling happily 1 mm upwards.",
                                       "Step 3 Help",
                                       style=wx.OK).ShowModal())
-        step3box.Add(root.step3helpbutton, 0, wx.ALIGN_CENTER)
-        # End of helpbutton stuff
         root.moveupward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step3box.Add(root.moveupward_works, 0, wx.ALIGN_CENTER)
-        self.Add(step3box, 0, wx.EXPAND)
-        # Step 4
-        self.Add((-1, rowspace))
-        step4box = wx.BoxSizer(wx.HORIZONTAL)
-        step4box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 4: "), 0, wx.ALIGN_CENTER)
+        ## Step 4
         root.M119button = wx.Button(parentpanel, label = "Check endstop statuses", size=(buttonwidth, -1))  # M119
-        step4box.Add(root.M119button, 0, wx.ALIGN_CENTER)
-        step4box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
-        # Helpbutton stuff
         root.step4helpbutton = wx.Button(parentpanel, label="Step 4 help")
         root.step4helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Confirm that X-max and Y-min only triggers when pressed." +
@@ -425,19 +389,9 @@ class QCControlsSizer(wx.BoxSizer):
                 " LED should light up.",
                                       "Step 4 Help",
                                       style=wx.OK).ShowModal())
-        step4box.Add(root.step4helpbutton, 0, wx.ALIGN_CENTER)
-        # End of helpbutton stuff
         root.endstops_work = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step4box.Add(root.endstops_work, 0, wx.ALIGN_CENTER)
-        self.Add(step4box, 0, wx.EXPAND)
-        # Step 5
-        self.Add((-1, rowspace))
-        step5box = wx.BoxSizer(wx.HORIZONTAL)
-        step5box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 5: "), 0, wx.ALIGN_CENTER)
+        ## Step 5
         root.homexbutton = wx.Button(parentpanel, label = "Home X axis", size=(buttonwidth, -1))  # G28 X
-        step5box.Add(root.homexbutton, 0, wx.ALIGN_CENTER)
-        step5box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 5
         root.step5helpbutton = wx.Button(parentpanel, label="Step 5 help")
         root.step5helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "The print head should move towards the X-limit switch while searching for X home." +
@@ -445,19 +399,9 @@ class QCControlsSizer(wx.BoxSizer):
                 " This help dialog should show a little video.",
                                       "Step 5 Help",
                                       style=wx.OK).ShowModal())
-        step5box.Add(root.step5helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 5
         root.xhoming_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step5box.Add(root.xhoming_works)
-        self.Add(step5box, 0, wx.EXPAND)
-        # Step 6
-        self.Add((-1, rowspace))
-        step6box = wx.BoxSizer(wx.HORIZONTAL)
-        step6box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 6: "), 0, wx.ALIGN_CENTER)
+        ## Step 6
         root.homeybutton = wx.Button(parentpanel, label = "Home Y axis", size=(buttonwidth, -1))  # G28 Y
-        step6box.Add(root.homeybutton, 0, wx.ALIGN_CENTER)
-        step6box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 6
         root.step6helpbutton = wx.Button(parentpanel, label="Step 6 help")
         root.step6helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "The print bed should move towards the Y-limit switch while searching for Y home." +
@@ -465,74 +409,34 @@ class QCControlsSizer(wx.BoxSizer):
                 " This help dialog should show a little video.",
                                       "Step 6 Help",
                                       style=wx.OK).ShowModal())
-        step6box.Add(root.step6helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 6
-        root.yhome_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step6box.Add(root.yhome_works)
-        self.Add(step6box, 0, wx.EXPAND)
-        # Step 7
-        self.Add((-1, rowspace))
-        step7box = wx.BoxSizer(wx.HORIZONTAL)
-        step7box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 7: "), 0, wx.ALIGN_CENTER)
+        root.yhoming_works = wx.CheckBox(parentpanel, wx.ID_ANY)
+        ## Step 7
         root.homeallbutton = wx.Button(parentpanel, label = "Home all axes", size=(buttonwidth, -1))  # G28. G1 Z1?
-        step7box.Add(root.homeallbutton, 0, wx.ALIGN_CENTER)
-        step7box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 7
         root.step7helpbutton = wx.Button(parentpanel, label="Step 7 help")
         root.step7helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "This re-homes the X and Y axes before trying to trigger the Z-probe at the center of the print bed." +
                 " When the Z-sensor has triggered, the printer knows where the print head is along the Z-axis (up/down-direction).",
                                       "Step 7 Help",
                                       style=wx.OK).ShowModal())
-        step7box.Add(root.step7helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 7
         root.homeall_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step7box.Add(root.homeall_works)
-        self.Add(step7box, 0, wx.EXPAND)
         # Step 8
-        self.Add((-1, rowspace))
-        step8box = wx.BoxSizer(wx.HORIZONTAL)
-        step8box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 8: "), 0, wx.ALIGN_CENTER)
         root.bedtempreadingbutton = wx.Button(parentpanel, label = "Read Print Bed Temperature", size=(buttonwidth, -1))  # M105 printbedsomething
-        step8box.Add(root.bedtempreadingbutton, 0, wx.ALIGN_CENTER)
-        step8box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 8
         root.step8helpbutton = wx.Button(parentpanel, label="Step 8 help")
         root.step8helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Check that print bed temperature readings are close to ambient temperature (probably 18C - 30C).",
                                       "Step 8 Help",
                                       style=wx.OK).ShowModal())
-        step8box.Add(root.step8helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 8
         root.bedtempreadings_work = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step8box.Add(root.bedtempreadings_work)
-        self.Add(step8box, 0, wx.EXPAND)
         # Step 9
-        self.Add((-1, rowspace))
-        step9box = wx.BoxSizer(wx.HORIZONTAL)
-        step9box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 9: "), 0, wx.ALIGN_CENTER)
         root.headtempreadingbutton = wx.Button(parentpanel, label = "Read Print Head Temperature", size=(buttonwidth, -1))  # M105 headsomething
-        step9box.Add(root.headtempreadingbutton, 0, wx.ALIGN_CENTER)
-        step9box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 9
         root.step9helpbutton = wx.Button(parentpanel, label="Step 9 help")
         root.step9helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Check that print head temperature readings are close to ambient temperature (probably 19C - 30C).",
                                       "Step 9 Help",
                                       style=wx.OK).ShowModal())
-        step9box.Add(root.step9helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 9
         root.headtempreadings_work = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step9box.Add(root.headtempreadings_work)
-        self.Add(step9box, 0, wx.EXPAND)
-        # Step 10
-        self.Add((-1, rowspace))
-        step10box = wx.BoxSizer(wx.HORIZONTAL)
-        step10box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 10: "), 0, wx.ALIGN_CENTER)
+        ## Step 10
         root.setbedtempbutton = wx.Button(parentpanel, label = "Set print bed temp to 40C", size=(buttonwidth, -1))  # M140 S40
-        step10box.Add(root.setbedtempbutton, 0, wx.ALIGN_CENTER)
-        step10box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 10
         root.step10helpbutton = wx.Button(parentpanel, label="Step 10 help")
         root.step10helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "This will run current through the print bed heater element for the first time." +
@@ -540,19 +444,9 @@ class QCControlsSizer(wx.BoxSizer):
                 " Use temp reading button to verify that bed temperature increases towards 40C.",
                                       "Step 10 Help",
                                       style=wx.OK).ShowModal())
-        step10box.Add(root.step10helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 10
-        root.printheadheater_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step10box.Add(root.printheadheater_works)
-        self.Add(step10box, 0, wx.EXPAND)
+        root.printbedheater_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         # Step 11
-        self.Add((-1, rowspace))
-        step11box = wx.BoxSizer(wx.HORIZONTAL)
-        step11box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 11: "), 0, wx.ALIGN_CENTER)
         root.setprintheadtempbutton = wx.Button(parentpanel, label = "Set print head temp to 200C", size=(buttonwidth, -1))  # M104 S200
-        step11box.Add(root.setprintheadtempbutton, 0, wx.ALIGN_CENTER)
-        step11box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 11
         root.step11helpbutton = wx.Button(parentpanel, label="Step 11 help")
         root.step11helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "This will run current through the print head heater element for the first time." +
@@ -560,19 +454,9 @@ class QCControlsSizer(wx.BoxSizer):
                 " Use temp reading button to verify that bed temperature increases towards 200C.",
                                       "Step 11 Help",
                                       style=wx.OK).ShowModal())
-        step11box.Add(root.step11helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 11
         root.printheadheater_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step11box.Add(root.printheadheater_works)
-        self.Add(step11box, 0, wx.EXPAND)
-        # Step 12
-        self.Add((-1, rowspace))
-        step12box = wx.BoxSizer(wx.HORIZONTAL)
-        step12box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 12: "), 0, wx.ALIGN_CENTER)
+        ## Step 12
         root.extrude10mmbutton = wx.Button(parentpanel, label = "Extrude 10mm", size=(buttonwidth, -1))  # What command? See pronsole extrude
-        step12box.Add(root.extrude10mmbutton, 0, wx.ALIGN_CENTER)
-        step12box.Add((0, buttonheight), 1, wx.EXPAND)  # Horizontal filler
-        # Help button 12
         root.step12helpbutton = wx.Button(parentpanel, label="Step 12 help")
         root.step12helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Feed filament to the extruder manually until it grips it." +
@@ -580,18 +464,81 @@ class QCControlsSizer(wx.BoxSizer):
                 " Verify that molten plastic flows freely.",
                                       "Step 12 Help",
                                       style=wx.OK).ShowModal())
-        step12box.Add(root.step12helpbutton, 0, wx.ALIGN_CENTER)
-        # End of Help button 12
         root.extruder_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step12box.Add(root.extruder_works)
-        self.Add(step12box, 0, wx.EXPAND)
-        # QC check done. Take user to first print.
+        # Step 13
         root.done = wx.Button(parentpanel, label = "Victory! Open Pronterface to print a cube!")
         root.done.Bind(wx.EVT_BUTTON, lambda event: self.ondoneclick(event, root))
+        # Texts for leftmost column
+        step1text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 1: ")
+        step2text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 2: ")
+        step3text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 3: ")
+        step4text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 4: ")
+        step5text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 5: ")
+        step6text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 6: ")
+        step7text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 7: ")
+        step8text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 8: ")
+        step9text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 9: ")
+        step10text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 10: ")
+        step11text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 11: ")
+        step12text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 12: ")
+        step13text = wx.StaticText(parentpanel, wx.ID_ANY, "")
+        # Add widgets to FlexGridSizer
+        fgsizer.AddMany([(step1text, 0, wx.ALIGN_CENTER),
+                         (root.moveright, 0, wx.ALIGN_CENTER),
+                         (root.step1helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.moveright_works, 0, wx.ALIGN_CENTER),
+                         (step2text, 0, wx.ALIGN_CENTER),
+                         (root.moveforward, 0, wx.ALIGN_CENTER),
+                         (root.step2helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.moveforward_works, 0, wx.ALIGN_CENTER),
+                         (step3text, 0, wx.ALIGN_CENTER),
+                         (root.moveupward, 0, wx.ALIGN_CENTER),
+                         (root.step3helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.moveupward_works, 0, wx.ALIGN_CENTER),
+                         (step4text, 0, wx.ALIGN_CENTER),
+                         (root.M119button, 0, wx.ALIGN_CENTER),
+                         (root.step4helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.endstops_work, 0, wx.ALIGN_CENTER),
+                         (step5text, 0, wx.ALIGN_CENTER),
+                         (root.homexbutton, 0, wx.ALIGN_CENTER),
+                         (root.step5helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.xhoming_works, 0, wx.ALIGN_CENTER),
+                         (step6text, 0, wx.ALIGN_CENTER),
+                         (root.homeybutton, 0, wx.ALIGN_CENTER),
+                         (root.step6helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.yhoming_works, 0, wx.ALIGN_CENTER),
+                         (step7text, 0, wx.ALIGN_CENTER),
+                         (root.homeallbutton, 0, wx.ALIGN_CENTER),
+                         (root.step7helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.homeall_works, 0, wx.ALIGN_CENTER),
+                         (step8text, 0, wx.ALIGN_CENTER),
+                         (root.bedtempreadingbutton, 0, wx.ALIGN_CENTER),
+                         (root.step8helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.bedtempreadings_work, 0, wx.ALIGN_CENTER),
+                         (step9text, 0, wx.ALIGN_CENTER),
+                         (root.headtempreadingbutton, 0, wx.ALIGN_CENTER),
+                         (root.step9helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.headtempreadings_work, 0, wx.ALIGN_CENTER),
+                         (step10text, 0, wx.ALIGN_CENTER),
+                         (root.setbedtempbutton, 0, wx.ALIGN_CENTER),
+                         (root.step10helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.printbedheater_works, 0, wx.ALIGN_CENTER),
+                         (step11text, 0, wx.ALIGN_CENTER),
+                         (root.setprintheadtempbutton, 0, wx.ALIGN_CENTER),
+                         (root.step11helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.printheadheater_works, 0, wx.ALIGN_CENTER),
+                         (step12text, 0, wx.ALIGN_CENTER),
+                         (root.extrude10mmbutton, 0, wx.ALIGN_CENTER),
+                         (root.step12helpbutton, 0, wx.ALIGN_CENTER),
+                         (root.extruder_works, 0, wx.ALIGN_CENTER),
+                         (step13text, 0, wx.ALIGN_CENTER),
+                         (root.done, 0, wx.ALIGN_CENTER),
+                         ])
+        self.Add(fgsizer, 1, flag=wx.EXPAND, border = 0)
         #root.done.Disable() # Disabled by default. Only enabled when all checkboxes are checked
-        self.Add(root.done, 1, flag=wx.EXPAND)
 
     def ondoneclick(self, event, root):
+        """ To be executed when Quality control is done. Takes user to standard interface with first print loaded. """
         root.settings.uimode = "Standard"
         root.reload_ui()
         try:
