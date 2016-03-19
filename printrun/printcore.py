@@ -198,10 +198,13 @@ class printcore():
                                           parity = PARITY_ODD)
                     self.printer.close()
                     self.printer.parity = PARITY_NONE
-                    try:  #this appears not to work on many platforms, so we're going to call it but not care if it fails
-                        self.printer.setDTR(dtr);
+                    try:
+                        # This appears not to work on many platforms,
+                        # so we're going to call it but not care if it fails
+                        self.printer.setDTR(dtr)
                     except:
-                        #self.logError(_("Could not set DTR on this platform")) #not sure whether to output an error message
+                        #not sure whether to output an error message
+                        #self.logError(_("Could not set DTR on this platform"))
                         pass
                     self.printer.open()
                 except SerialException as e:

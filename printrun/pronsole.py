@@ -29,7 +29,6 @@ import locale
 import logging
 import traceback
 import re
-import errno
 
 from serial import SerialException
 
@@ -721,13 +720,13 @@ class pronsole(cmd.Cmd):
             self.p.connect(port, baud, dtr, err_message_softness)
         except SerialException as e:
             # Currently, there is no proper errno, but it should be there in the future
-            e.errno=int(re.findall(r'Errno \d+', repr(e))[0].strip('Errno '))
+            e.errno = int(re.findall(r'Errno \d+', repr(e))[0].strip('Errno '))
             if e.errno == 2:
                 if err_message_softness:
                     self.logError("\nCould not connect. Is the correct port is selected in drop-down menu?")
                 else:
                     self.logError("Tried to connect to a non-existing port.")
-                return e.errno # This value is catchable in user interface
+                return e.errno  # This value is catchable in user interface
             elif e.errno == 8:
                 self.logError(_("You don't have permission to open %s.") % port)
                 self.logError(_("You might need to add yourself to the dialout group."))

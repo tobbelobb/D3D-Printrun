@@ -350,134 +350,135 @@ class QCControlsSizer(wx.BoxSizer):
     def __init__(self, root, parentpanel = None, standalone_mode = False):
         super(QCControlsSizer, self).__init__(wx.VERTICAL)
         if not parentpanel: parentpanel = root.panel
-
+        # First button row height set manually
         rowspace = 12
-        self.Add((-1,rowspace))
+        self.Add((-1, rowspace))
         rowspace = 8
-
+        # Step 1
         step1box = wx.BoxSizer(wx.HORIZONTAL)
-        step1box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 1: "), 0, wx.ALIGN_CENTER) # G1 X10 F600
+        step1box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 1: "), 0, wx.ALIGN_CENTER)  # G1 X10 F600
         root.moveright = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")
         step1box.Add(root.moveright, 0, wx.ALIGN_CENTER)
         root.moveright_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step1box.Add((0,0), 1, wx.EXPAND) # Horizontal filler
+        step1box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
         # Helpbutton stuff
         root.step1helpbutton = wx.Button(parentpanel, label="Step 1 help")
-        def step1help(event):
-            dialog = wx.MessageDialog(parentpanel, "Should show X-carriage moving 10 mm to the right.", "Step 1 Help",style=wx.OK)
-            dialog.ShowModal()
-        root.step1helpbutton.Bind(wx.EVT_BUTTON, step1help)
+        root.step1helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
+                                      "Should show X-carriage moving 10 mm to the right.",
+                                      "Step 1 Help",
+                                      style=wx.OK).ShowModal())
         step1box.Add(root.step1helpbutton, 0, wx.ALIGN_CENTER)
         # End of helpbutton stuff
         step1box.Add(root.moveright_works, 0, wx.ALIGN_CENTER)
         self.Add(step1box, 0, wx.EXPAND)
-
+        # Save button size and use for rest of buttons
         buttonwidth = root.moveright.Size[0]
         buttonheight = root.moveright.Size[1]
-        self.Add((-1,rowspace))
-
+        # Step 2
+        self.Add((-1, rowspace))
         step2box = wx.BoxSizer(wx.HORIZONTAL)
-        step2box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 2: "), 0, wx.ALIGN_CENTER) # G1 Y10 F600
+        step2box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 2: "), 0, wx.ALIGN_CENTER)  # G1 Y10 F600
         root.moveforward = wx.Button(parentpanel, label = "Move 10 mm away from origo along Y-axis")
         step2box.Add(root.moveforward, 0, wx.ALIGN_CENTER)
         root.moveforward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
-        step2box.Add((0,0), 1, wx.EXPAND) # Horizontal filler
+        step2box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
         # Helpbutton stuff
         root.step2helpbutton = wx.Button(parentpanel, label="Step 2 help")
-        def step2help(event):
-            dialog = wx.MessageDialog(parentpanel, "Should show video where printer moves its bed 10 mm forwards.", "Step 2 Help",style=wx.OK)
-            dialog.ShowModal()
-        root.step2helpbutton.Bind(wx.EVT_BUTTON, step2help)
+        root.step2helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
+                                      "Should show video where printer moves its bed 10 mm forwards.",
+                                      "Step 2 Help",
+                                      style=wx.OK).ShowModal())
         step2box.Add(root.step2helpbutton, 0, wx.ALIGN_CENTER)
         # End of helpbutton stuff
         step2box.Add(root.moveforward_works, 0, wx.ALIGN_CENTER)
         self.Add(step2box, 0, wx.EXPAND)
-
-        self.Add((-1,rowspace))
-
+        # Step 3
+        self.Add((-1, rowspace))
         step3box = wx.BoxSizer(wx.HORIZONTAL)
-        step3box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 3: "), 0, wx.ALIGN_CENTER) # G1 Z10 F200
-        root.moveupward = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth,-1))
+        step3box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 3: "), 0, wx.ALIGN_CENTER)  # G1 Z10 F200
+        root.moveupward = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth, -1))
         step3box.Add(root.moveupward, 0, wx.ALIGN_CENTER)
-        step3box.Add((0,0), 1, wx.EXPAND) # Horizontal filler
+        step3box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
         # Helpbutton stuff
         root.step3helpbutton = wx.Button(parentpanel, label="Step 3 help")
-        def step3help(event):
-            dialog = wx.MessageDialog(parentpanel, "This box should contain a little video showing a print head travelling happily 1 mm upwards.", "Step 3 Help",style=wx.OK)
-            dialog.ShowModal()
-        root.step3helpbutton.Bind(wx.EVT_BUTTON, step3help)
+        root.step3helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
+                     "This box should contain a little video showing a print head travelling happily 1 mm upwards.",
+                                      "Step 3 Help",
+                                      style=wx.OK).ShowModal())
         step3box.Add(root.step3helpbutton, 0, wx.ALIGN_CENTER)
         # End of helpbutton stuff
         root.moveupward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         step3box.Add(root.moveupward_works, 0, wx.ALIGN_CENTER)
         self.Add(step3box, 0, wx.EXPAND)
-
-
-        self.Add((-1,rowspace))
+        # Step 4
+        self.Add((-1, rowspace))
         step4box = wx.BoxSizer(wx.HORIZONTAL)
         step4box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 4: "), 0, wx.ALIGN_CENTER)
-        root.M119button = wx.Button(parentpanel, label = "Check endstop status", size=(buttonwidth,-1)) #M119
+        root.M119button = wx.Button(parentpanel, label = "Check endstop status", size=(buttonwidth, -1))  # M119
         step4box.Add(root.M119button, 0, wx.ALIGN_CENTER)
-        step4box.Add((0,0), 1, wx.EXPAND) # Horizontal filler
+        step4box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
         # Helpbutton stuff
         root.step4helpbutton = wx.Button(parentpanel, label="Step 4 help")
-        def step4help(event):
-            dialog = wx.MessageDialog(parentpanel, "Confirm that X-max and Y-min only triggers when pressed. Hold metal object directly below Z-probe to trigger it. LED should light up.", "Step 4 Help",style=wx.OK)
-            dialog.ShowModal()
-        root.step4helpbutton.Bind(wx.EVT_BUTTON, step4help)
+        root.step4helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
+                "Confirm that X-max and Y-min only triggers when pressed." +
+                " Hold metal object directly below Z-probe to trigger it." +
+                " LED should light up.",
+                                      "Step 4 Help",
+                                      style=wx.OK).ShowModal())
         step4box.Add(root.step4helpbutton, 0, wx.ALIGN_CENTER)
         # End of helpbutton stuff
         root.endstops_work = wx.CheckBox(parentpanel, wx.ID_ANY)
         step4box.Add(root.endstops_work, 0, wx.ALIGN_CENTER)
         self.Add(step4box, 0, wx.EXPAND)
-
-        self.Add((-1,rowspace))
+        # Step 5
+        self.Add((-1, rowspace))
         step5box = wx.BoxSizer(wx.HORIZONTAL)
-        step5box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 5: ", size=(-1,buttonheight)))
-        step5box.Add((buttonwidth,buttonheight), 1) # Horizontal filler
-        step5box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " ", size=(-1,buttonheight)))
-        step5box.Add((0,0), 1, wx.EXPAND) # Horizontal filler
+        step5box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 5: ", size=(-1, buttonheight)))
+        step5box.Add((buttonwidth, buttonheight), 1)  # Horizontal filler
+        step5box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " ", size=(-1, buttonheight)))
+        step5box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
         root.probe_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         step5box.Add(root.probe_works)
         self.Add(step5box, 0, wx.EXPAND)
-
-        self.Add((-1,rowspace))
+        # Step 6
+        self.Add((-1, rowspace))
         step6box = wx.BoxSizer(wx.HORIZONTAL)
-        step6box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 6: ", size=(-1,buttonheight)))
-        step6box.Add((buttonwidth,buttonheight), 1) # Horizontal filler
-        step6box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " ", size=(-1,buttonheight)))
-        step6box.Add((0,0), 1, wx.EXPAND) # Horizontal filler
+        step6box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " Step 6: ", size=(-1, buttonheight)))
+        step6box.Add((buttonwidth, buttonheight), 1)  # Horizontal filler
+        step6box.Add(wx.StaticText(parentpanel, wx.ID_ANY, " ", size=(-1, buttonheight)))
+        step6box.Add((0, 0), 1, wx.EXPAND)  # Horizontal filler
         root.probe_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         step6box.Add(root.probe_works)
         self.Add(step6box, 0, wx.EXPAND)
-
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 7: check if Z-probe triggers on bed")) # Run sensor close to bed manually.
-
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 8: check if X-homing works")) # G28 X
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 9: check if Y-homing works")) # G28 Y
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 10: check if homing all axes works")) # G28. Raise Z axis after this
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 11: check if temp readings work")) #
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 12: check if bed heating works")) #
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 13: check if hot end heating works")) #
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 14: check if hot end heating works")) #
-
-        self.Add((-1,rowspace))
-        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 15: check if extruder works")) #
-
+        # Step 7
+        # Run sensor close to bed manually.
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 7: check if Z-probe triggers on bed"))
+        # Step 8
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 8: check if X-homing works"))  # G28 X
+        # Step 9
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 9: check if Y-homing works"))  # G28 Y
+        # Step 10
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 10: check if homing all axes works"))  # G28. Raise Z axis after this
+        # Step 11
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 11: check if temp readings work"))  # How?
+        # Step 12
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 12: check if bed heating works"))  # How?
+        # Step 13
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 13: check if hot end heating works"))  # How?
+        # Step 14
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 14: check if hot end heating works"))  # How?
+        # Step 15
+        self.Add((-1, rowspace))
+        self.Add(wx.StaticText(parentpanel, wx.ID_ANY, "Step 15: check if extruder works"))  # How?
+        # QC check done. Take user to first print.
         root.done = wx.Button(parentpanel, label = "Victory! Open Pronterface to print a cube!")
         root.done.Bind(wx.EVT_BUTTON, lambda event: self.ondoneclick(event, root))
         #root.done.Disable() # Disabled by default. Only enabled when all checkboxes are checked
@@ -488,7 +489,7 @@ class QCControlsSizer(wx.BoxSizer):
         root.reload_ui()
         try:
             recent_files = json.loads(root.settings.recentfiles)
-            root.loadfile(event, recent_files[0]) # Try to load recent file
+            root.loadfile(event, recent_files[0])  # Try to load recent file
         except:
             pass
 

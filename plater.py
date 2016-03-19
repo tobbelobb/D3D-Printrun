@@ -25,11 +25,11 @@ if __name__ == '__main__':
 
     from printrun.printcore import __version__ as printcore_version
 
-    usage = "Usage:\n"+\
-            "  plater [OPTION]\n"+\
-            "  plater FILES\n\n"+\
-            "Options:\n"+\
-            "  -V, --version\t\t\tPrint program's version number and exit\n"+\
+    usage = "Usage:\n" + \
+            "  plater [OPTION]\n" + \
+            "  plater FILES\n\n" + \
+            "Options:\n" + \
+            "  -V, --version\t\t\tPrint program's version number and exit\n" + \
             "  -h, --help\t\t\tPrint this help message and exit\n"
 
     try:
@@ -39,8 +39,8 @@ if __name__ == '__main__':
         print usage
         sys.exit(2)
     for o, a in opts:
-        if o in ('-V','--version'):
-            print "printrun "+printcore_version
+        if o in ('-V', '--version'):
+            print "printrun " + printcore_version
             sys.exit(0)
         elif o in ('-h', '--help'):
             print usage

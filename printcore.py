@@ -18,7 +18,6 @@
 import time
 import getopt
 import sys
-import getopt
 
 from printrun.printcore import printcore
 from printrun.utils import setup_logging
@@ -32,14 +31,14 @@ if __name__ == '__main__':
 
     from printrun.printcore import __version__ as printcore_version
 
-    usage = "Usage:\n"+\
-            "  printcore [OPTIONS] PORT FILE\n\n"+\
-            "Options:\n"+\
-            "  -b, --baud=BAUD_RATE"+\
-                        "\t\tSet baud rate value. Default value is 115200\n"+\
-            "  -s, --statusreport\t\tPrint progress as percentage\n"+\
-            "  -v, --verbose\t\t\tPrint additional progress information\n"+\
-            "  -V, --version\t\t\tPrint program's version number and exit\n"+\
+    usage = "Usage:\n" + \
+            "  printcore [OPTIONS] PORT FILE\n\n" + \
+            "Options:\n" + \
+            "  -b, --baud=BAUD_RATE" + \
+                        "\t\tSet baud rate value. Default value is 115200\n" + \
+            "  -s, --statusreport\t\tPrint progress as percentage\n" + \
+            "  -v, --verbose\t\t\tPrint additional progress information\n" + \
+            "  -V, --version\t\t\tPrint program's version number and exit\n" + \
             "  -h, --help\t\t\tPrint this help message and exit\n"
 
     try:
@@ -53,10 +52,10 @@ if __name__ == '__main__':
         if o in ('-h', '--help'):
             print usage
             sys.exit(0)
-        elif o in ('-V','--version'):
-            print "printrun "+printcore_version
+        elif o in ('-V', '--version'):
+            print "printrun " + printcore_version
             sys.exit(0)
-        elif o in ('-b','--baud'):
+        elif o in ('-b', '--baud'):
             try:
                 baud = int(a)
             except ValueError:
