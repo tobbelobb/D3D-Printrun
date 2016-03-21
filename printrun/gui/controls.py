@@ -355,9 +355,10 @@ class QCControlsSizer(wx.BoxSizer):
 
         # Step 1
         root.moverightbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")
-        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91 ; Go to relative positioning"))
-        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 X10 ; Move X axis 10 mm"))
-        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90 ; Back to absolute positioning"))
+        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
+          "G91 ; Go to relative positioning\n"
+          "G1 X10 ; Move X axis 10 mm\n"
+          "G90 ; Back to absolute positioning"))
         root.moveright_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step1helpbutton = wx.Button(parentpanel, label="Step 1 help")
         root.step1helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
@@ -369,9 +370,10 @@ class QCControlsSizer(wx.BoxSizer):
         buttonheight = root.moverightbutton.Size[1]
         # Step 2
         root.moveforwardbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along Y-axis")
-        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
-        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 Y10"))
-        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
+        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
+          "G91\n"
+          "G1 Y10\n"
+          "G90"))
         root.moveforward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step2helpbutton = wx.Button(parentpanel, label="Step 2 help")
         root.step2helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
@@ -380,9 +382,10 @@ class QCControlsSizer(wx.BoxSizer):
                                       style=wx.OK).ShowModal())
         # Step 3
         root.moveupwardbutton = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth, -1))
-        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
-        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 Z1"))
-        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
+        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
+          "G91\n"
+          "G1 Z1\n"
+          "G90"))
         root.step3helpbutton = wx.Button(parentpanel, label="Step 3 help")
         root.step3helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                      "This box should contain a little video showing a print head travelling happily 1 mm upwards.",
@@ -476,9 +479,10 @@ class QCControlsSizer(wx.BoxSizer):
         root.setheadtemp_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         ## Step 12
         root.extrude10mmbutton = wx.Button(parentpanel, label = "Extrude 10mm", size=(buttonwidth, -1))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 E10"))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
+        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
+          "G91\n"
+          "G1 E10\n"
+          "G91"))
         root.step12helpbutton = wx.Button(parentpanel, label="Step 12 help")
         root.step12helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Feed filament to the extruder manually until it grips it." +
@@ -572,7 +576,7 @@ class QCControlsSizer(wx.BoxSizer):
         self.Add(fgsizer, 1, flag=wx.EXPAND, border = 0)
 
     def qc_send(self, event, root, command):
-        root.addtexttolog("SENDING: " + command + "\n")
+        root.addtexttolog("SENDING:\n" + command + "\n")
         root.p.send_now(command)
 
     def ondoneclick(self, event, root):
