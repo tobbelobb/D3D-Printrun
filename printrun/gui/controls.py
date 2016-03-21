@@ -355,9 +355,9 @@ class QCControlsSizer(wx.BoxSizer):
 
         # Step 1
         root.moverightbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91 ; Go to relative positioning"))
+        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91 ; Go to relative positioning"))
         root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 X10 ; Move X axis 10 mm"))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90 ; Back to absolute positioning"))
+        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90 ; Back to absolute positioning"))
         root.moveright_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step1helpbutton = wx.Button(parentpanel, label="Step 1 help")
         root.step1helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
@@ -369,9 +369,9 @@ class QCControlsSizer(wx.BoxSizer):
         buttonheight = root.moverightbutton.Size[1]
         # Step 2
         root.moveforwardbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along Y-axis")
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
+        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
         root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 Y10"))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
+        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
         root.moveforward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step2helpbutton = wx.Button(parentpanel, label="Step 2 help")
         root.step2helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
@@ -380,9 +380,9 @@ class QCControlsSizer(wx.BoxSizer):
                                       style=wx.OK).ShowModal())
         # Step 3
         root.moveupwardbutton = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth, -1))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
+        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G91"))
         root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G1 Z1"))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
+        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "G90"))
         root.step3helpbutton = wx.Button(parentpanel, label="Step 3 help")
         root.step3helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                      "This box should contain a little video showing a print head travelling happily 1 mm upwards.",
