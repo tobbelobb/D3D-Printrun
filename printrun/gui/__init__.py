@@ -147,6 +147,8 @@ class MainWindow(wx.Frame):
         outermost_hbox = wx.BoxSizer(wx.HORIZONTAL)
         self.outermost_vbox.Add(outermost_hbox, 1, wx.EXPAND)
 
+#        splitter = wx.SplitterWindow(self, style = wx.SP_BORDER)
+
         # Create the lower box with buttons and serial
         controls_sizer = QCControlsSizer(self)  # Controls sizer holds all buttons
         outermost_hbox.Add(controls_sizer, 2, wx.EXPAND)
@@ -154,6 +156,7 @@ class MainWindow(wx.Frame):
         # Create the log
         log_pane = LogPane(self)
         outermost_hbox.Add(log_pane, 1, wx.EXPAND)
+
 
         # Make sure we exit correctly
         self.Bind(wx.EVT_CLOSE, self.kill)
@@ -367,7 +370,7 @@ class MainWindow(wx.Frame):
             self.extrude10mm_works.Disable()
             self.done.Disable()  # Can't be done with QC
         # Buttons that depend on moveright
-        if self.moveright_works.IsChecked():
+        if self.moveright_works.IsChecked() and self.endstop_works.IsChecked():
             self.homexbutton.Enable()
             self.homex_works.Enable()
         else:
@@ -376,7 +379,7 @@ class MainWindow(wx.Frame):
             self.homeallbutton.Disable()
             self.homeall_works.Disable()
         # Buttons that depend on moveforward
-        if self.moveforward_works.IsChecked():
+        if self.moveforward_works.IsChecked() and self.endstop_works.IsChecked():
             self.homeybutton.Enable()
             self.homey_works.Enable()
         else:
@@ -384,15 +387,20 @@ class MainWindow(wx.Frame):
             self.homey_works.Disable()
             self.homeallbutton.Disable()
             self.homeall_works.Disable()
-        if not self.moveupward_works.IsChecked():
+        if not self.moveupward_works.IsChecked() or not self.endstop_works.IsChecked():
             self.homeallbutton.Disable()
             self.homeall_works.Disable()
-        if (self.moveright_works.IsChecked() and
-            self.moveforward_works.IsChecked() and
-            self.moveupward_works.IsChecked() and
-            self.endstop_works.IsChecked()):
+        if(self.moveright_works.IsChecked() and
+           self.moveforward_works.IsChecked() and
+           self.moveupward_works.IsChecked() and
+           self.endstop_works.IsChecked() and
+           self.homex_works.IsChecked() and
+           self.homey_works.IsChecked()):
             self.homeallbutton.Enable()
             self.homeall_works.Enable()
+        else:
+            self.homeallbutton.Disable()
+            self.homeall_works.Disable()
         if self.bedtempreading_works.IsChecked():
             self.setbedtempbutton.Enable()
             self.setbedtemp_works.Enable()
