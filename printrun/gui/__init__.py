@@ -243,12 +243,6 @@ class MainWindow(wx.Frame):
         self.SetMinSize(self.ClientToWindowSize(minsize))  # client to window
         self.Fit()
 
-    ## Panels        |
-    # upperpanel     |
-    # lowerpanel     |
-    # leftpanel      |
-    # controls_panel |
-
     def createGui(self, compact = False, mini = False):
         self.mainsizer = wx.BoxSizer(wx.VERTICAL)
         upperpanel = self.newPanel(self.panel, False)  # upperpanel holds Connect button and such
@@ -325,29 +319,131 @@ class MainWindow(wx.Frame):
 
         self.cbuttons_reload()
 
-    def gui_set_connected(self):
-        if self.settings.uimode == "QC":  # Address each button individually
-            self.moveright.Enable()
+    # There's a comment in MainWindow's __init__ saying
+    # "this list will contain all controls that should be only enabled
+    #  when we're connected to a printer"
+    # xy/z-buttons are explicitly enabled/disabled in gui_set_(dis)connected
+    def qcbuttons_reload(self, event):
+        """ Handles all dependencies between control buttons in QC uimode """
+        # All buttons that depend only on working connection
+        # Try to enable few but disable many
+        if self.p.online:
+            self.moverightbutton.Enable()
             self.moveright_works.Enable()
-            self.moveforward.Enable()
+            self.moveforwardbutton.Enable()
             self.moveforward_works.Enable()
+            self.moveupwardbutton.Enable()
+            self.moveupward_works.Enable()
+            self.endstopbutton.Enable()
+            self.endstop_works.Enable()
+            self.bedtempreadingbutton.Enable()
+            self.bedtempreading_works.Enable()
+            self.headtempreadingbutton.Enable()
+            self.headtempreading_works.Enable()
+        else:
+            self.moverightbutton.Disable()  # No step 1, 2, 3 or 4 (moving + endstops)
+            self.moveright_works.Disable()
+            self.moveforwardbutton.Disable()
+            self.moveforward_works.Disable()
+            self.moveupwardbutton.Disable()
+            self.moveupward_works.Disable()
+            self.endstopbutton.Disable()
+            self.endstop_works.Disable()
+            self.homexbutton.Disable()  # No step 5, 6 or 7 (homing)
+            self.homex_works.Disable()
+            self.homeybutton.Disable()
+            self.homey_works.Disable()
+            self.homeallbutton.Disable()
+            self.homeall_works.Disable()
+            self.bedtempreadingbutton.Disable()  # No step 8, 9, 10 or 11 (temps)
+            self.bedtempreading_works.Disable()
+            self.headtempreadingbutton.Disable()
+            self.headtempreading_works.Disable()
+            self.setbedtempbutton.Disable()
+            self.setbedtemp_works.Disable()
+            self.setheadtempbutton.Disable()
+            self.setheadtemp_works.Disable()
+            self.extrude10mmbutton.Disable()  # No step 12 (extruder)
+            self.extrude10mm_works.Disable()
+            self.done.Disable()  # Can't be done with QC
+        # Buttons that depend on moveright
+        if self.moveright_works.IsChecked():
+            self.homexbutton.Enable()
+            self.homex_works.Enable()
+        else:
+            self.homexbutton.Disable()
+            self.homex_works.Disable()
+            self.homeallbutton.Disable()
+            self.homeall_works.Disable()
+        # Buttons that depend on moveforward
+        if self.moveforward_works.IsChecked():
+            self.homeybutton.Enable()
+            self.homey_works.Enable()
+        else:
+            self.homeybutton.Disable()
+            self.homey_works.Disable()
+            self.homeallbutton.Disable()
+            self.homeall_works.Disable()
+        if not self.moveupward_works.IsChecked():
+            self.homeallbutton.Disable()
+            self.homeall_works.Disable()
+        if (self.moveright_works.IsChecked() and
+            self.moveforward_works.IsChecked() and
+            self.moveupward_works.IsChecked() and
+            self.endstop_works.IsChecked()):
+            self.homeallbutton.Enable()
+            self.homeall_works.Enable()
+        if self.bedtempreading_works.IsChecked():
+            self.setbedtempbutton.Enable()
+            self.setbedtemp_works.Enable()
+        else:
+            self.setbedtempbutton.Disable()
+            self.setbedtemp_works.Disable()
+        if self.headtempreading_works.IsChecked():
+            self.setheadtempbutton.Enable()
+            self.setheadtemp_works.Enable()
+        else:
+            self.setheadtempbutton.Disable()
+            self.setheadtemp_works.Disable()
+            self.extrude10mmbutton.Disable()
+            self.extrude10mm_works.Disable()
+        if self.setheadtemp_works.IsChecked():
+            self.extrude10mmbutton.Enable()
+            self.extrude10mm_works.Enable()
+        if (self.moveright_works.IsChecked() and
+           self.moveforward_works.IsChecked() and
+           self.moveupward_works.IsChecked() and
+           self.endstop_works.IsChecked() and
+           self.homex_works.IsChecked() and
+           self.homey_works.IsChecked() and
+           self.homeall_works.IsChecked() and
+           self.bedtempreading_works.IsChecked() and
+           self.headtempreading_works.IsChecked() and
+           self.setbedtemp_works.IsChecked() and
+           self.setheadtemp_works.IsChecked() and
+           self.extrude10mm_works.IsChecked()):
+            self.done.Enable()
+        else:
+            self.done.Disable()
+
+
+    def gui_set_connected(self):
+        if self.settings.uimode == "QC":
+            self.qcbuttons_reload(None)
         else:
             self.xyb.enable()
             self.zb.enable()
-            for control in self.printerControls:
-                control.Enable()
+        for control in self.printerControls:
+            control.Enable()
 
     def gui_set_disconnected(self):
         if self.settings.uimode == "QC":
-            self.moveright.Disable()
-            self.moveright_works.Disable()
-            self.moveforward.Disable()
-            self.moveforward_works.Disable()
+            self.qcbuttons_reload(None)
         else:
-            self.printbtn.Disable()
-            self.pausebtn.Disable()
-            self.recoverbtn.Disable()
             self.xyb.disable()
             self.zb.disable()
-            for control in self.printerControls:
-                control.Disable()
+        self.printbtn.Disable()
+        self.pausebtn.Disable()
+        self.recoverbtn.Disable()
+        for control in self.printerControls:
+            control.Disable()

@@ -209,7 +209,6 @@ class printcore():
                     self.printer.open()
                 except SerialException as e:
                     self.printer = None
-                    #print(e)
                     raise
                     return e.errno
                 except IOError as e:

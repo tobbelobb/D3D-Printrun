@@ -1066,6 +1066,8 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         self.log(_("Trying to connect to port %s at baud %s...") % (port, baud))
         if self.settings.uimode == "QC":
             connectval = self.connect_to_printer(port, baud, self.settings.dtr, err_message_softness=True)
+            if connectval == True:
+                self.qcbuttons_reload(None)
         else:
             connectval = self.connect_to_printer(port, baud, self.settings.dtr)
         if connectval == 2:
