@@ -1003,7 +1003,7 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         elif self.loading_gcode:
             status_string = self.loading_gcode_message
         wx.CallAfter(self.statusbar.SetStatusText, status_string)
-        if not self.settings.uimode == "QC":
+        if hasattr(self, 'gviz'):
             wx.CallAfter(self.gviz.Refresh)
         # Call pronsole's statuschecker inner loop function to handle
         # temperature monitoring and status loop sleep
@@ -1011,14 +1011,15 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         try:
             while not self.sentglines.empty():
                 gc = self.sentglines.get_nowait()
-                if not self.settings.uimode == "QC":
+                if hasattr(self, 'gviz'):
                     wx.CallAfter(self.gviz.addgcodehighlight, gc)
                 self.sentglines.task_done()
         except Queue.Empty:
             pass
 
     def statuschecker(self):
-        pronsole.pronsole.statuschecker(self)
+        if not self.settings.uimode == "QC":
+            pronsole.pronsole.statuschecker(self)
         wx.CallAfter(self.statusbar.SetStatusText, _("Not connected to printer."))
 
     #  --------------------------------------------------------------
@@ -1570,13 +1571,13 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
             if gline_s is not None:
                 temp = gline_s
                 if self.display_gauges: wx.CallAfter(self.hottgauge.SetTarget, temp)
-                if self.display_graph: wx.CallAfter(self.graph.SetExtruder0TargetTemperature, temp)
+                if hasattr(self, 'graph') and self.display_graph: wx.CallAfter(self.graph.SetExtruder0TargetTemperature, temp)
         elif gline.command in ["M140", "M190"]:
             gline_s = gcoder.S(gline)
             if gline_s is not None:
                 temp = gline_s
                 if self.display_gauges: wx.CallAfter(self.bedtgauge.SetTarget, temp)
-                if self.display_graph: wx.CallAfter(self.graph.SetBedTargetTemperature, temp)
+                if hasattr(self, 'graph') and self.display_graph: wx.CallAfter(self.graph.SetBedTargetTemperature, temp)
         elif gline.command in ["M106"]:
             gline_s = gcoder.S(gline)
             fanpow = 255

@@ -407,7 +407,8 @@ class MainWindow(wx.Frame):
         else:
             self.setbedtempbutton.Disable()
             self.setbedtemp_works.Disable()
-        if self.headtempreading_works.IsChecked():
+        if (self.headtempreading_works.IsChecked() and
+           self.moveupward_works.IsChecked()):
             self.setheadtempbutton.Enable()
             self.setheadtemp_works.Enable()
         else:

@@ -355,10 +355,9 @@ class QCControlsSizer(wx.BoxSizer):
 
         # Step 1
         root.moverightbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")
-        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
-          "G91\n"
-          "G1 X10\n"
-          "G90"))
+        root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: (self.qc_send(event, root, "G91"),
+                                                                self.qc_send(event, root, "G1 X10"),
+                                                                self.qc_send(event, root, "G90")))
         root.moveright_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step1helpbutton = wx.Button(parentpanel, label="Step 1 help")
         root.step1helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
@@ -370,10 +369,9 @@ class QCControlsSizer(wx.BoxSizer):
         buttonheight = root.moverightbutton.Size[1]
         # Step 2
         root.moveforwardbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along Y-axis")
-        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
-          "G91\n"
-          "G1 Y10\n"
-          "G90"))
+        root.moveforwardbutton.Bind(wx.EVT_BUTTON, lambda event: (self.qc_send(event, root, "G91"),
+                                                                  self.qc_send(event, root, "G1 Y10"),
+                                                                  self.qc_send(event, root, "G90")))
         root.moveforward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step2helpbutton = wx.Button(parentpanel, label="Step 2 help")
         root.step2helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
@@ -381,14 +379,12 @@ class QCControlsSizer(wx.BoxSizer):
                                       "Step 2 Help",
                                       style=wx.OK).ShowModal())
         # Step 3
-        root.moveupwardbutton = wx.Button(parentpanel, label = "Move 1 mm upwards", size=(buttonwidth, -1))
-        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
-          "G91\n"
-          "G1 Z1\n"
-          "G90"))
+        root.moveupwardbutton = wx.Button(parentpanel, label = "Move 0.5 mm downwards", size=(buttonwidth, -1))
+        root.moveupwardbutton.Bind(wx.EVT_BUTTON, lambda event: (self.qc_send(event, root, "G92 Z0.5"),
+                                                                 self.qc_send(event, root, "G1 Z0")))
         root.step3helpbutton = wx.Button(parentpanel, label="Step 3 help")
         root.step3helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
-                     "This box should contain a little video showing a print head travelling happily 1 mm upwards.",
+                     "This box should contain a little video showing a print head travelling happily 0.5 mm downwards.",
                                       "Step 3 Help",
                                       style=wx.OK).ShowModal())
         root.moveupward_works = wx.CheckBox(parentpanel, wx.ID_ANY)
@@ -438,7 +434,7 @@ class QCControlsSizer(wx.BoxSizer):
         # Step 8
         # TODO: print bed reading needs specialized command and prettier output
         root.bedtempreadingbutton = wx.Button(parentpanel, label = "Read Print Bed Temperature", size=(buttonwidth, -1))  # M105 printbedsomething
-        root.bedtempreadingbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "M105"))
+        root.bedtempreadingbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "M105 B"))
         root.step8helpbutton = wx.Button(parentpanel, label="Step 8 help")
         root.step8helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Check that print bed temperature readings are close to ambient temperature (probably 18C - 30C).",
@@ -448,7 +444,7 @@ class QCControlsSizer(wx.BoxSizer):
         # Step 9
         # TODO: print head reading needs specialized command and prettier output
         root.headtempreadingbutton = wx.Button(parentpanel, label = "Read Print Head Temperature", size=(buttonwidth, -1))  # M105 headsomething
-        root.headtempreadingbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "M105"))
+        root.headtempreadingbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "M105 T"))
         root.step9helpbutton = wx.Button(parentpanel, label="Step 9 help")
         root.step9helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Check that print head temperature readings are close to ambient temperature (probably 19C - 30C).",
@@ -467,32 +463,34 @@ class QCControlsSizer(wx.BoxSizer):
                                       style=wx.OK).ShowModal())
         root.setbedtemp_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         # Step 11
-        root.setheadtempbutton = wx.Button(parentpanel, label = "Set print head temp to 200C", size=(buttonwidth, -1))
-        root.setheadtempbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root, "M104 S200"))
+        root.setheadtempbutton = wx.Button(parentpanel, label = "Lift head and set to 200C", size=(buttonwidth, -1))
+        root.setheadtempbutton.Bind(wx.EVT_BUTTON, lambda event: (self.qc_send(event, root, "G1 Z10"),
+                                                                  self.qc_send(event, root, "M104 S200")))
         root.step11helpbutton = wx.Button(parentpanel, label="Step 11 help")
         root.step11helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
-                "This will run current through the print head heater element for the first time." +
+                "This will lift the print head by 10 mm and run current through its heater element for the first time." +
                 " Pull the plug if something melts or burns." +
-                " Use temp reading button to verify that bed temperature increases towards 200C.",
+                " Use temp reading button to verify that bed temperature increases towards 200C."
+                " Note that you must wait until print head is warm before trying to extrude.",
                                       "Step 11 Help",
                                       style=wx.OK).ShowModal())
         root.setheadtemp_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         ## Step 12
         root.extrude10mmbutton = wx.Button(parentpanel, label = "Extrude 10mm", size=(buttonwidth, -1))
-        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
-          "G91\n"
-          "G1 E10\n"
-          "G91"))
+        root.extrude10mmbutton.Bind(wx.EVT_BUTTON, lambda event: (self.qc_send(event, root, "G91"),
+                                                                  self.qc_send(event, root, "G1 E10"),
+                                                                  self.qc_send(event, root, "G91")))
         root.step12helpbutton = wx.Button(parentpanel, label="Step 12 help")
         root.step12helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,
                 "Feed filament to the extruder manually until it grips it." +
                 " The extruder should feed the filament down to the print head." +
-                " Verify that molten plastic flows freely.",
+                " Verify that molten plastic flows freely."
+                " Printer will refuse to extrude if print head is cold.",
                                       "Step 12 Help",
                                       style=wx.OK).ShowModal())
         root.extrude10mm_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         # Step 13
-        root.done = wx.Button(parentpanel, label = "Victory! Open Pronterface to print a cube!")
+        root.done = wx.Button(parentpanel, label = "Victory! Open Pronterface!")
         root.done.Bind(wx.EVT_BUTTON, lambda event: self.ondoneclick(event, root))
         # Texts for leftmost column
         step1text = wx.StaticText(parentpanel, wx.ID_ANY, " Step 1: ")
@@ -576,8 +574,7 @@ class QCControlsSizer(wx.BoxSizer):
         self.Add(fgsizer, 1, flag=wx.EXPAND, border = 0)
 
     def qc_send(self, event, root, command):
-        root.addtexttolog("SENDING:\n" + command + "\n")
-        root.p.send_now(command)
+        root.onecmd(root.precmd(str(command)))
 
     def ondoneclick(self, event, root):
         """ To be executed when Quality control is done. Takes user to standard interface with first print loaded. """
