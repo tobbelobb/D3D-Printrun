@@ -356,9 +356,9 @@ class QCControlsSizer(wx.BoxSizer):
         # Step 1
         root.moverightbutton = wx.Button(parentpanel, label = "Move 10 mm away from origo along X-axis")
         root.moverightbutton.Bind(wx.EVT_BUTTON, lambda event: self.qc_send(event, root,
-          "G91 ; Go to relative positioning\n"
-          "G1 X10 ; Move X axis 10 mm\n"
-          "G90 ; Back to absolute positioning"))
+          "G91\n"
+          "G1 X10\n"
+          "G90"))
         root.moveright_works = wx.CheckBox(parentpanel, wx.ID_ANY)
         root.step1helpbutton = wx.Button(parentpanel, label="Step 1 help")
         root.step1helpbutton.Bind(wx.EVT_BUTTON, lambda event: wx.MessageDialog(parentpanel,

@@ -1011,7 +1011,8 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
         try:
             while not self.sentglines.empty():
                 gc = self.sentglines.get_nowait()
-                wx.CallAfter(self.gviz.addgcodehighlight, gc)
+                if not self.settings.uimode == "QC":
+                    wx.CallAfter(self.gviz.addgcodehighlight, gc)
                 self.sentglines.task_done()
         except Queue.Empty:
             pass
@@ -1743,7 +1744,7 @@ Printrun. If not, see <http://www.gnu.org/licenses/>."""
             isreport = report_type != REPORT_NONE
             if report_type & REPORT_POS:
                 self.update_pos()
-            elif report_type & REPORT_TEMP:
+            elif report_type & REPORT_TEMP and not self.settings.uimode == "QC":
                 wx.CallAfter(self.tempdisp.SetLabel, self.tempreadings.strip().replace("ok ", ""))
                 self.update_tempdisplay()
             if not self.p.loud and (l not in ["ok", "wait"] and (not isreport or report_type & REPORT_MANUAL)):

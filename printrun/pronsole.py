@@ -717,6 +717,8 @@ class pronsole(cmd.Cmd):
 
     def connect_to_printer(self, port, baud, dtr, err_message_softness=False):
         try:
+            #self.p.online = True
+            #return True
             self.p.connect(port, baud, dtr, err_message_softness)
         except SerialException as e:
             # Currently, there is no proper errno, but it should be there in the future
